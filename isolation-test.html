@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>اختبار عزل الشركات</title>
+<style>
+body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:#F5F0E6;color:#241811;margin:0;padding:18px}
+.card{max-width:760px;margin:0 auto;background:#fff;border:1px solid #D8CBAE;border-radius:14px;padding:20px}
+h1{font-size:20px;margin:0 0 6px;color:#3B2A1D} p{margin:6px 0;font-size:14px}
+button{background:#3B2A1D;color:#fff;border:0;border-radius:8px;padding:11px 22px;font-size:15px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.5}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+td,th{border-bottom:1px solid #eee;padding:7px 6px;text-align:right;vertical-align:top}
+.ok{color:#3F6B4F;font-weight:700}.bad{color:#A64B3F;font-weight:700}.info{color:#8a6d1f;font-weight:700}
+#sum{margin-top:14px;font-size:16px;font-weight:800}
+.sec td{background:#EAE1CE;font-weight:700}
+code{direction:ltr;unicode-bidi:embed;font-size:12px;color:#666}
+</style></head><body><div class="card">
+<h1>اختبار عزل الشركات (مشروع التجربة فقط)</h1>
+<p>ينشئ شركتين تجريبيتين وموظفاً، ثم يحاول كل حساب الوصول لبيانات الشركة الأخرى، ويتأكد أن النتيجة "مرفوض" في كل مرة.</p>
+<p>لا يلمس هذا الاختبار بياناتك الحقيقية، لأنه يعمل على مشروع <code>hudoorak-test</code> فقط.</p>
+<p><button id="go">ابدأ الاختبار</button></p>
+<div id="sum"></div>
+<table id="t"></table>
+<p id="rep" style="margin-top:16px;font-size:12px;white-space:pre-wrap;direction:ltr;text-align:left;display:none"></p>
+</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+const cfg={apiKey:"AIzaSyDCly5fShH_cCSBeo6gEMmRN7p5vDstfaI",authDomain:"hudoorak-test.firebaseapp.com",projectId:"hudoorak-test",storageBucket:"hudoorak-test.firebasestorage.app",messagingSenderId:"1017899809492",appId:"1:1017899809492:web:e52863d0367ccd3c7a9941"};
+firebase.initializeApp(cfg);
+const sec=firebase.initializeApp(cfg,"Sec");
+const auth=firebase.auth(), db=firebase.firestore(), secAuth=sec.auth();
+db.settings({experimentalAutoDetectLongPolling:true,merge:true});
+const TS=firebase.firestore.Timestamp, SRV=firebase.firestore.FieldValue.serverTimestamp;
+const rows=[]; let pass=0, fail=0, infos=0;
+const tbl=document.getElementById("t");
+function section(title){const tr=document.createElement("tr");tr.className="sec";tr.innerHTML=`<td colspan="3">${title}</td>`;tbl.appendChild(tr);rows.push("## "+title);}
+function addRow(name,expected,ok,detail,isInfo){
+  const tr=document.createElement("tr");
+  const cls=isInfo?"info":(ok?"ok":"bad");
+  const mark=isInfo?"ملاحظة":(ok?"✔ نجح":"✘ فشل");
+  tr.innerHTML=`<td>${name}</td><td>${expected}</td><td class="${cls}">${mark} <code>${detail||""}</code></td>`;
+  tbl.appendChild(tr);
+  rows.push(`${isInfo?"INFO":ok?"PASS":"FAIL"} | ${name} | expected ${expected} | ${detail||""}`);
+  if(isInfo)infos++; else if(ok)pass++; else fail++;
+}
+async function expect(name,allow,fn,isInfo){
+  let got="allowed",code="";
+  try{await fn();}catch(e){got="denied";code=e.code||e.message;}
+  const ok = allow ? got==="allowed" : (got==="denied" && /permission-denied/.test(code));
+  addRow(name,allow?"مسموح":"مرفوض",ok,got==="allowed"?"allowed":code,isInfo);
+}
+const email=(u,t)=>`${u}@${t}.hrsystem.local`;
+async function createTenant(code,user,pw){
+  const c=await auth.createUserWithEmailAndPassword(email(user,code),pw);
+  const uid=c.user.uid, b=db.batch();
+  b.set(db.doc(`tenants/${code}`),{name:"شركة "+code,ownerUid:uid,status:"trial",plan:"trial",trialEndsAt:TS.fromDate(new Date(Date.now()+14*864e5)),createdAt:SRV()});
+  b.set(db.doc(`userRoles/${uid}`),{role:"admin",tenantId:code,accountId:"u1"});
+  await b.commit();
+  await db.doc(`tenants/${code}/hrSystem/users`).set({users:[{id:"u1",username:user,role:"admin",authUid:uid}]});
+  return uid;
+}
+const emps=n=>Array.from({length:n},(_,i)=>({id:"e"+i,name:"موظف "+i}));
+document.getElementById("go").onclick=async function(){
+  this.disabled=true;
+  const r=Math.random().toString(36).slice(2,7), A="tst-a-"+r, B="tst-b-"+r, PW="Test#12345";
+  try{
+    section("تجهيز: إنشاء شركتين وموظف");
+    const uidA=await createTenant(A,"admin",PW); addRow("إنشاء الشركة A بحسابها المدير","مسموح",true,A);
+    await db.doc(`tenants/${A}/hrSystem/data`).set({employees:emps(30)});
+    await db.doc(`tenants/${A}/hrSystemBackups/b1`).set({x:1});
+    await db.doc(`tenants/${A}/userCredentials/u1`).set({password:"secret-A"});
+    const uidB=await createTenant(B,"admin",PW); addRow("إنشاء الشركة B بحسابها المدير","مسموح",true,B);
+    await db.doc(`tenants/${B}/hrSystem/data`).set({employees:emps(5)});
+    await db.doc(`tenants/${B}/hrSystemBackups/b1`).set({x:1});
+    await db.doc(`tenants/${B}/userCredentials/u1`).set({password:"secret-B"});
+    // موظف في A (يُنشأ بتطبيق ثانوي، ويسجّل له الأدمن دوره)
+    await auth.signInWithEmailAndPassword(email("admin",A),PW);
+    const ec=await secAuth.createUserWithEmailAndPassword(email("emp",A),PW); const uidE=ec.user.uid; await secAuth.signOut();
+    await db.doc(`userRoles/${uidE}`).set({role:"employee",tenantId:A,accountId:"u2"});
+    await db.doc(`tenants/${A}/userCredentials/u2`).set({password:"emp-pw"});
+    addRow("أدمن A ينشئ موظفاً داخل شركته","مسموح",true,"");
+
+    section("بدون تسجيل دخول");
+    await auth.signOut();
+    await expect("قراءة بيانات A بلا دخول",false,()=>db.doc(`tenants/${A}/hrSystem/data`).get());
+    await expect("قراءة مستند الشركة A بلا دخول",false,()=>db.doc(`tenants/${A}`).get());
+
+    section("أدمن الشركة A (داخل شركته)");
+    await auth.signInWithEmailAndPassword(email("admin",A),PW);
+    await expect("قراءة بيانات A",true,()=>db.doc(`tenants/${A}/hrSystem/data`).get({source:"server"}));
+    await expect("كتابة بيانات A",true,()=>db.doc(`tenants/${A}/hrSystem/data`).set({employees:emps(31)},{merge:true}));
+    await expect("قراءة النسخ الاحتياطية في A",true,()=>db.doc(`tenants/${A}/hrSystemBackups/b1`).get());
+    await expect("تعديل اسم الشركة",true,()=>db.doc(`tenants/${A}`).update({name:"اسم جديد"}));
+    section("أدمن الشركة A (محاولات الوصول لشركة B)");
+    await expect("قراءة بيانات B",false,()=>db.doc(`tenants/${B}/hrSystem/data`).get({source:"server"}));
+    await expect("كتابة بيانات B",false,()=>db.doc(`tenants/${B}/hrSystem/data`).set({employees:[]},{merge:true}));
+    await expect("قراءة مستند الشركة B",false,()=>db.doc(`tenants/${B}`).get({source:"server"}));
+    await expect("قراءة حسابات B",false,()=>db.doc(`tenants/${B}/hrSystem/users`).get({source:"server"}));
+    await expect("قراءة كلمات مرور B",false,()=>db.doc(`tenants/${B}/userCredentials/u1`).get({source:"server"}));
+    await expect("قراءة نسخ B الاحتياطية",false,()=>db.doc(`tenants/${B}/hrSystemBackups/b1`).get({source:"server"}));
+    await expect("قراءة قائمة نسخ B (استعلام)",false,()=>db.collection(`tenants/${B}/hrSystemBackups`).get({source:"server"}));
+    await expect("تغيير شركتي إلى B في فهرس الأدوار",false,()=>db.doc(`userRoles/${uidA}`).set({role:"admin",tenantId:B,accountId:"u1"}));
+    await expect("نقل حساب مدير B إلى شركتي",false,()=>db.doc(`userRoles/${uidB}`).set({role:"admin",tenantId:A,accountId:"u1"}));
+    await expect("قراءة دور مدير B",false,()=>db.doc(`userRoles/${uidB}`).get({source:"server"}));
+    section("حماية الشركة والاشتراك");
+    await expect("حذف جماعي (من 31 موظفاً إلى 5)",false,()=>db.doc(`tenants/${A}/hrSystem/data`).update({employees:emps(5)}));
+    await expect("تغيير حالة الاشتراك إلى active من المتصفح",false,()=>db.doc(`tenants/${A}`).update({status:"active"}));
+    await expect("تمديد التجربة من المتصفح",false,()=>db.doc(`tenants/${A}`).update({trialEndsAt:TS.fromDate(new Date(Date.now()+365*864e5))}));
+    await expect("حذف مستند الشركة",false,()=>db.doc(`tenants/${A}`).delete());
+    await expect("حذف سجل حضور",false,()=>db.doc(`tenants/${A}/hrAttendance/2026-11-a`).delete());
+
+    section("حساب جديد يحاول الاستيلاء على كود شركة موجودة");
+    const x=await auth.createUserWithEmailAndPassword(email("intruder",A+"x"),PW);
+    await expect("إنشاء شركة بنفس كود B",false,async()=>{const b=db.batch();
+      b.set(db.doc(`tenants/${B}`),{name:"x",ownerUid:x.user.uid,status:"trial",plan:"trial",trialEndsAt:TS.fromDate(new Date(Date.now()+864e5)),createdAt:SRV()});
+      b.set(db.doc(`userRoles/${x.user.uid}`),{role:"admin",tenantId:B,accountId:"u1"}); await b.commit();});
+    await expect("إعطاء نفسي دور أدمن في شركة B",false,()=>db.doc(`userRoles/${x.user.uid}`).set({role:"admin",tenantId:B,accountId:"u1"}));
+    await expect("إنشاء شركة بتجربة 5 سنوات",false,async()=>{const b=db.batch();const code="tst-c-"+r;
+      b.set(db.doc(`tenants/${code}`),{name:"x",ownerUid:x.user.uid,status:"trial",plan:"trial",trialEndsAt:TS.fromDate(new Date(Date.now()+5*365*864e5)),createdAt:SRV()});
+      b.set(db.doc(`userRoles/${x.user.uid}`),{role:"admin",tenantId:code,accountId:"u1"}); await b.commit();});
+    await expect("قراءة بيانات A بحساب بلا شركة",false,()=>db.doc(`tenants/${A}/hrSystem/data`).get({source:"server"}));
+
+    section("موظف عادي في الشركة A");
+    await auth.signInWithEmailAndPassword(email("emp",A),PW);
+    await expect("قراءة بيانات A",true,()=>db.doc(`tenants/${A}/hrSystem/data`).get({source:"server"}));
+    await expect("قراءة كلمة مروره هو",true,()=>db.doc(`tenants/${A}/userCredentials/u2`).get({source:"server"}));
+    await expect("قراءة كلمة مرور المدير",false,()=>db.doc(`tenants/${A}/userCredentials/u1`).get({source:"server"}));
+    await expect("قراءة النسخ الاحتياطية",false,()=>db.doc(`tenants/${A}/hrSystemBackups/b1`).get({source:"server"}));
+    await expect("ترقية نفسه إلى أدمن في فهرس الأدوار",false,()=>db.doc(`userRoles/${uidE}`).set({role:"admin",tenantId:A,accountId:"u2"}));
+    await expect("طلب موافقة باسم شخص آخر",false,()=>db.doc(`tenants/${A}/hrApprovals/r1`).set({requesterUid:uidA,status:"pending"}));
+    await expect("طلب موافقة باسمه هو",true,()=>db.doc(`tenants/${A}/hrApprovals/r2`).set({requesterUid:uidE,status:"pending"}));
+    await expect("اعتماد الطلب بنفسه",false,()=>db.doc(`tenants/${A}/hrApprovals/r2`).update({status:"approved"}));
+    await expect("قراءة بيانات الشركة B",false,()=>db.doc(`tenants/${B}/hrSystem/data`).get({source:"server"}));
+    await expect("كتابة بيانات الشركة B",false,()=>db.doc(`tenants/${B}/hrSystem/data`).set({employees:[]},{merge:true}));
+    await expect("تعديل قائمة الحسابات في شركته (ترقية نفسه داخل التطبيق)",false,()=>db.doc(`tenants/${A}/hrSystem/users`).update({users:[{id:"u2",role:"admin"}]}),true);
+
+    section("أدمن الشركة B");
+    await auth.signInWithEmailAndPassword(email("admin",B),PW);
+    await expect("قراءة بيانات B",true,()=>db.doc(`tenants/${B}/hrSystem/data`).get({source:"server"}));
+    await expect("قراءة بيانات A",false,()=>db.doc(`tenants/${A}/hrSystem/data`).get({source:"server"}));
+    await expect("قراءة كلمات مرور A",false,()=>db.doc(`tenants/${A}/userCredentials/u1`).get({source:"server"}));
+  }catch(e){ addRow("خطأ غير متوقع أوقف الاختبار","—",false,(e.code||"")+" "+(e.message||e)); }
+  await auth.signOut().catch(()=>{});
+  const s=document.getElementById("sum");
+  s.className=fail?"bad":"ok";
+  s.textContent=fail?`✘ فشل ${fail} اختبار — أرسلي لي صورة النتيجة`:`✔ نجحت كل الاختبارات (${pass}) — الشركات معزولة`;
+  const rep=document.getElementById("rep"); rep.style.display="block"; rep.textContent=`PASS ${pass} / FAIL ${fail} / INFO ${infos}\n`+rows.join("\n");
+  this.disabled=false;
+};
+</script></body></html>

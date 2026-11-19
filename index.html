@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="حضورك: نظام عربي للحضور والانصراف والرواتب والتأمينات الاجتماعية للمنشآت في السعودية.">
+<title>حضورك</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600;700&display=swap">
+<style>
+/* Layout: RTL marketing page. Sticky header, hero with a live-looking payroll panel, features grid, 3-step flow, plans, contact. */
+:root {
+  --bg: #f4f8f8;
+  --surface: #ffffff;
+  --ink: #0f1b2d;
+  --muted: #4d5b6d;
+  --line: #d9e3e4;
+  --accent: #0b7a6e;
+  --accent-ink: #ffffff;
+  --accent-soft: #dff2ef;
+  --warn: #9a5b00;
+  --font-display: "Readex Pro", "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans Arabic", system-ui, "Segoe UI", Tahoma, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1522; --surface: #132033; --ink: #eaf1f4; --muted: #9fb0c0; --line: #24364d;
+    --accent: #3cc9b5; --accent-ink: #06231f; --accent-soft: #123a3a; --warn: #f0b45a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1522; --surface: #132033; --ink: #eaf1f4; --muted: #9fb0c0; --line: #24364d;
+  --accent: #3cc9b5; --accent-ink: #06231f; --accent-soft: #123a3a; --warn: #f0b45a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.7; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; line-height: 1.3; margin: 0; }
+p { margin: 0; }
+a { color: inherit; }
+.wrap { max-width: 1120px; margin-inline: auto; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+/* header */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--bg); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 24px; padding-block: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 22px; text-decoration: none; }
+.mark { width: 30px; height: 30px; border-radius: 9px; background: var(--accent); display: grid; place-items: center; }
+.mark svg { width: 18px; height: 18px; }
+.nav { display: flex; gap: 22px; margin-inline-start: auto; font-size: 15px; color: var(--muted); }
+.nav a { text-decoration: none; }
+.nav a:hover { color: var(--ink); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 20px; border-radius: 10px; font: 600 15px var(--font-body); text-decoration: none; border: 1.5px solid var(--accent); background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--accent); }
+@media (max-width: 760px) { .nav { display: none; } .top .btn { margin-inline-start: auto; } }
+
+/* hero */
+.hero { padding-block: 56px 72px; }
+.hero .wrap { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; }
+.eyebrow { display: inline-block; font-size: 14px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 4px 12px; border-radius: 999px; margin-bottom: 18px; }
+.hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 700; }
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero p.lead { margin-top: 18px; font-size: 18px; color: var(--muted); max-width: 52ch; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.note { margin-top: 14px; font-size: 14px; color: var(--muted); }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; } }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; font-weight: 600; }
+.tag { font-size: 12px; font-weight: 500; color: var(--warn); border: 1px solid var(--line); padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 420px; }
+th, td { text-align: start; padding: 10px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; color: var(--muted); font-weight: 500; }
+td.n, th.n { text-align: end; font-variant-numeric: tabular-nums; }
+td.neg { color: var(--warn); }
+td.tot { font-weight: 600; }
+tr:last-child td { border-bottom: 0; }
+.punch { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: var(--accent-soft); font-size: 14px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); flex: none; }
+
+/* sections */
+section { padding-block: 64px; }
+section.alt { background: var(--surface); border-block: 1px solid var(--line); }
+.head { max-width: 640px; margin-bottom: 36px; }
+.head h2 { font-size: clamp(26px, 3.6vw, 36px); }
+.head p { margin-top: 10px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.feat { padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); min-width: 0; }
+section.alt .feat { background: var(--bg); }
+.feat svg { width: 26px; height: 26px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 12px; }
+.feat h3 { font-size: 18px; margin-bottom: 6px; }
+.feat p { font-size: 15px; color: var(--muted); }
+
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; counter-reset: s; }
+.step { padding: 22px; border-top: 3px solid var(--accent); background: var(--surface); border-radius: 0 0 12px 12px; border-inline: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.step b { font-family: var(--font-display); font-size: 14px; color: var(--accent); }
+.step h3 { font-size: 19px; margin: 4px 0 6px; }
+.step p { font-size: 15px; color: var(--muted); }
+
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; align-items: stretch; }
+.plan { display: flex; flex-direction: column; gap: 14px; padding: 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); min-width: 0; }
+.plan.pick { border: 2px solid var(--accent); }
+.plan h3 { font-size: 20px; }
+.price { font-family: var(--font-display); font-size: 36px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.price small { font-family: var(--font-body); font-size: 14px; font-weight: 400; color: var(--muted); }
+.plan .size { color: var(--muted); font-size: 15px; }
+.plan ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 15px; flex: 1; }
+.plan li { display: flex; gap: 8px; align-items: flex-start; }
+.plan li::before { content: ""; width: 7px; height: 7px; margin-top: 10px; border-radius: 50%; background: var(--accent); flex: none; }
+.plan .btn { width: 100%; }
+
+details { border-bottom: 1px solid var(--line); padding-block: 14px; }
+summary { cursor: pointer; font-weight: 600; font-size: 17px; }
+details p { margin-top: 8px; color: var(--muted); }
+.faq { max-width: 760px; }
+
+.contact { display: grid; gap: 14px; justify-items: start; max-width: 560px; }
+.contact p { color: var(--muted); }
+footer { padding-block: 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.pains { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+.pain { padding: 18px 20px; border-inline-start: 4px solid var(--warn); background: var(--surface); border-radius: 10px; font-size: 15px; min-width: 0; }
+.pain b { display: block; font-family: var(--font-display); font-size: 17px; margin-bottom: 4px; }
+.pain span { color: var(--muted); }
+.value { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.value div { padding: 22px; border-radius: 14px; background: var(--accent-soft); min-width: 0; }
+.value h3 { font-size: 18px; margin-bottom: 6px; }
+.value p { font-size: 15px; color: var(--muted); }
+.roi { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+@media (max-width: 860px) { .roi { grid-template-columns: 1fr; } }
+.fields { display: grid; gap: 14px; }
+label { display: grid; gap: 6px; font-size: 14px; font-weight: 500; }
+input[type=number], input[type=text], input[type=tel] { font: 16px var(--font-body); min-height: 44px; padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); width: 100%; }
+input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.out { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: grid; gap: 14px; min-width: 0; }
+.out .big { font-family: var(--font-display); font-size: clamp(30px, 5vw, 42px); font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; line-height: 1.2; }
+.out .row { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; border-top: 1px solid var(--line); padding-top: 10px; font-variant-numeric: tabular-nums; }
+.out .row span:first-child { color: var(--muted); }
+.small { font-size: 13px; color: var(--muted); }
+.fit { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { padding: 8px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); font-size: 15px; }
+.demo { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+@media (max-width: 860px) { .demo { grid-template-columns: 1fr; } }
+.demo .fields { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px; }
+.hint { color: var(--warn); font-size: 14px; min-height: 22px; }
+</style>
+
+</head>
+<body>
+<div dir="rtl" lang="ar">
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="حضورك">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+      حضورك
+    </a>
+    <nav class="nav" aria-label="التنقل">
+      <a href="#features">المميزات</a>
+      <a href="#how">كيف يعمل</a>
+      <a href="#pricing">الأسعار</a>
+      <a href="#roi">حاسبة التوفير</a>
+      <a href="#faq">أسئلة شائعة</a>
+    </nav>
+    <a class="btn" href="#contact">اطلب عرضاً توضيحياً</a>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero" style="padding-top:56px">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">نظام موارد بشرية لمنشآتك في السعودية</span>
+      <h1>الحضور والرواتب والتأمينات، في <em>مكان واحد</em></h1>
+      <p class="lead">يبصم موظفوك من جوالاتهم، ويحسب النظام الدوام والوقت الإضافي والخصومات والتأمينات الاجتماعية، وتخرج لك تقارير الرواتب جاهزة بصيغة Excel.</p>
+      <div class="cta">
+        <a class="btn" href="#contact">اطلب عرضاً توضيحياً</a>
+        <a class="btn ghost" href="#pricing">شاهد الباقات</a>
+      </div>
+      <p class="note">يعمل من الجوال والكمبيوتر، وباللغة العربية بالكامل.</p>
+    </div>
+
+    <div class="panel" aria-label="مثال على ملخص الرواتب">
+      <div class="panel-head"><span>ملخص رواتب الشهر</span><span class="tag">بيانات مثال</span></div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>الموظف</th><th>الدفع</th><th class="n">إضافي</th><th class="n">خصم</th><th class="n">الصافي</th></tr></thead>
+          <tbody>
+            <tr><td>سارة العتيبي</td><td>تحويل</td><td class="n">120</td><td class="n neg">0</td><td class="n tot">4,620</td></tr>
+            <tr><td>فهد القحطاني</td><td>نقداً</td><td class="n">340</td><td class="n neg">85</td><td class="n tot">3,255</td></tr>
+            <tr><td>محمد الزهراني</td><td>تحويل</td><td class="n">0</td><td class="n neg">150</td><td class="n tot">2,850</td></tr>
+            <tr><td>نورة الشهري</td><td>تحويل</td><td class="n">210</td><td class="n neg">0</td><td class="n tot">5,310</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="punch"><span class="dot"></span><span>بصمة حضور مسجلة 08:02، وتُحفظ بوقتها الأصلي حتى لو ضعف الإنترنت.</span></div>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="wrap">
+    <div class="head"><h2>مشكلات تتكرر في كل منشأة، وحضورك يحلها</h2></div>
+    <div class="pains">
+      <div class="pain"><b>ساعات تضيع في الحساب</b><span>حساب الرواتب والوقت الإضافي والخصومات يدوياً كل شهر.</span></div>
+      <div class="pain"><b>حضور يُراجع بالرسائل والورق</b><span>بصمات ناقصة وأخطاء في الأوقات، ونقاش كل شهر حول من حضر.</span></div>
+      <div class="pain"><b>بيانات متفرقة</b><span>ملفات الموظفين والإجازات والسلف في أكثر من مكان.</span></div>
+      <div class="pain"><b>تعديلات بلا توثيق</b><span>لا أحد يعرف من غيّر الراتب أو الدوام ومتى.</span></div>
+    </div>
+    <div class="head" style="margin-top:48px"><h2>ما يتغير عندما تنتقل إلى حضورك</h2></div>
+    <div class="value">
+      <div><h3>حساب تلقائي</h3><p>الدوام والوقت الإضافي والخصومات والتأمينات تُحسب لكل موظف دون جداول يدوية.</p></div>
+      <div><h3>بيانات دقيقة</h3><p>البصمة تُحفظ بوقتها الأصلي، ولا يُقبل دخول وخروج بفارق دقائق بالخطأ.</p></div>
+      <div><h3>موافقات وصلاحيات</h3><p>التعديلات الحساسة تنتظر اعتماد المدير الرئيسي، وللمدير المحدود صلاحيات أقل.</p></div>
+      <div><h3>توثيق كامل</h3><p>سجل يبيّن من عدّل ماذا ومتى، ونسخ احتياطية لبياناتك.</p></div>
+    </div>
+  </div>
+</section>
+<section id="features" class="alt">
+  <div class="wrap">
+    <div class="head">
+      <h2>كل ما يحتاجه مدير الموارد البشرية في منشأة صغيرة أو متوسطة</h2>
+      <p>صُمم النظام من تجربة تشغيل فعلية لمنشآت سعودية، لذلك يحسب ما تحتاجه فعلاً.</p>
+    </div>
+    <div class="grid">
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>
+        <h3>بصمة من جوال الموظف</h3>
+        <p>حضور وانصراف بضغطة واحدة، ويمنع النظام تسجيل الدخول والخروج بفارق دقائق بالخطأ.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r=".8"/></svg>
+        <h3>يعمل مع ضعف الإنترنت</h3>
+        <p>تُحفظ البصمة على الجهاز بوقتها الأصلي وتُرسل تلقائياً عند عودة الاتصال، دون ضياع أو تغيير في الوقت.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+        <h3>جداول الدوام والإجازات</h3>
+        <p>حدد دوام كل موظف، وسجّل الإجازات والسلف، وتابع الرصيد من شاشة واحدة.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.8"/><path d="M6 9.5v.01M18 14.5v.01"/></svg>
+        <h3>رواتب بالوقت الإضافي والخصومات</h3>
+        <p>يحسب الراتب الصافي حسب دوام كل موظف، ويفرّق بين من يستلم نقداً ومن يستلم بالتحويل.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><path d="M12 3l8 3v5.5c0 4.6-3.2 8-8 9.5-4.8-1.5-8-4.9-8-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>
+        <h3>التأمينات الاجتماعية للسعوديين</h3>
+        <p>يدعم النسب الجديدة المجدولة حسب السنة، وتُعدَّل النسب من الإعدادات عند صدور قرار جديد.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12.5l5 5M14 12.5l-5 5"/></svg>
+        <h3>تقارير Excel جاهزة</h3>
+        <p>ملخص الرواتب، وتقرير الرواتب النقدية، وتقرير التحويل، تُصدَّر بضغطة واحدة.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M17 8.5l1.7 1.7 3-3.4"/></svg>
+        <h3>صلاحيات واعتمادات</h3>
+        <p>مدير بصلاحيات محدودة، وتعديلات حساسة تنتظر اعتماد المدير الرئيسي قبل أن تُطبَّق.</p>
+      </article>
+      <article class="feat">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg>
+        <h3>بحث وسجل تدقيق ونسخ احتياطي</h3>
+        <p>ابحث في أي قائمة بسرعة، وراجع من عدّل ماذا ومتى، واحتفظ بنسخ احتياطية لبياناتك.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="head"><h2>من الإعداد إلى كشف الرواتب في ثلاث خطوات</h2></div>
+    <div class="steps">
+      <div class="step"><b>الخطوة 1</b><h3>أضف موظفيك ودوامهم</h3><p>سجّل بيانات الموظفين وجدول الدوام والراتب وطريقة الدفع لكل واحد.</p></div>
+      <div class="step"><b>الخطوة 2</b><h3>الموظفون يبصمون من جوالاتهم</h3><p>كل موظف يدخل بحسابه ويسجل حضوره وانصرافه، وتظهر السجلات لك مباشرة.</p></div>
+      <div class="step"><b>الخطوة 3</b><h3>احسب الرواتب وصدّر التقرير</h3><p>راجع الخصومات والوقت الإضافي، وحمّل ملخص الرواتب بصيغة Excel.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<section id="roi">
+  <div class="wrap">
+    <div class="head">
+      <h2>احسب كم توفر مع حضورك</h2>
+      <p>عدّل الأرقام لتطابق منشأتك. النتيجة تقدير مبني على افتراضاتك أنت وليست وعداً بنتيجة.</p>
+    </div>
+    <div class="roi">
+      <div class="fields">
+        <label for="emp">عدد الموظفين<input id="emp" type="number" min="1" value="30" inputmode="numeric"></label>
+        <label for="hrs">ساعات الحضور والرواتب شهرياً حالياً<input id="hrs" type="number" min="0" value="30" inputmode="numeric"></label>
+        <label for="pct">نسبة الوقت التي تتوقع توفيرها (%)<input id="pct" type="number" min="0" max="100" value="50" inputmode="numeric"></label>
+        <label for="rate">تكلفة ساعة العمل الإداري (ريال)<input id="rate" type="number" min="0" value="40" inputmode="numeric"></label>
+      </div>
+      <div class="out" aria-live="polite">
+        <div><div class="small">التوفير الشهري التقديري</div><div class="big" id="saveMonth">0</div></div>
+        <div class="row"><span>ساعات موفّرة شهرياً</span><span id="saveHrs">0</span></div>
+        <div class="row"><span>الباقة المناسبة</span><span id="planName">-</span></div>
+        <div class="row"><span>سعر الباقة شهرياً</span><span id="planPrice">-</span></div>
+        <div class="row"><span>الصافي بعد الاشتراك</span><span id="net">-</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section id="pricing" class="alt">
+  <div class="wrap">
+    <div class="head">
+      <h2>باقات شهرية حسب عدد الموظفين</h2>
+      <p>تبدأ بتجربة مجانية، وتدفع شهرياً دون عقود طويلة.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <h3>أساسية</h3><div class="size">حتى 15 موظفاً</div>
+        <div class="price">149 <small>ريال / شهرياً</small></div>
+        <ul><li>الحضور والانصراف</li><li>الإجازات والسلف</li><li>الرواتب الأساسية</li></ul>
+        <a class="btn ghost" href="#contact">ابدأ التجربة</a>
+      </div>
+      <div class="plan pick">
+        <h3>نمو</h3><div class="size">حتى 50 موظفاً</div>
+        <div class="price">399 <small>ريال / شهرياً</small></div>
+        <ul><li>كل مميزات الأساسية</li><li>التأمينات الاجتماعية</li><li>الاعتمادات</li><li>تقارير Excel</li></ul>
+        <a class="btn" href="#contact">ابدأ التجربة</a>
+      </div>
+      <div class="plan">
+        <h3>أعمال</h3><div class="size">حتى 150 موظفاً</div>
+        <div class="price">899 <small>ريال / شهرياً</small></div>
+        <ul><li>كل مميزات نمو</li><li>مدير بصلاحيات محدودة</li><li>مستخدمون متعددون</li><li>دعم بأولوية</li></ul>
+        <a class="btn ghost" href="#contact">ابدأ التجربة</a>
+      </div>
+      <div class="plan">
+        <h3>مخصصة</h3><div class="size">أكثر من 150 موظفاً</div>
+        <div class="price" style="font-size:26px">حسب الاتفاق</div>
+        <ul><li>إعداد خاص بمنشأتك</li><li>تدريب فريقك</li></ul>
+        <a class="btn ghost" href="#contact">تواصل معنا</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="head"><h2>أسئلة شائعة</h2></div>
+    <div class="faq">
+      <details><summary>هل يعمل من الجوال؟</summary><p>نعم. يفتح الموظفون النظام من متصفح الجوال ويسجلون حضورهم وانصرافهم، ويعمل المدير من الجوال أو الكمبيوتر.</p></details>
+      <details><summary>ماذا يحدث لو انقطع الإنترنت وقت البصمة؟</summary><p>تُحفظ البصمة على جهاز الموظف بوقتها الأصلي، وتُرسل إلى النظام تلقائياً حين يعود الاتصال.</p></details>
+      <details><summary>هل يدعم نظام التأمينات الاجتماعية الجديد للسعوديين؟</summary><p>نعم. النسب مجدولة حسب السنة ويمكن تعديلها من الإعدادات إذا تغيّرت.</p></details>
+      <details><summary>هل أستطيع تصدير الرواتب؟</summary><p>نعم. تصدّر ملخص الرواتب، وتقرير الرواتب النقدية، وتقرير التحويل بصيغة Excel.</p></details>
+      <details><summary>كم يستغرق تشغيل النظام في منشأتي؟</summary><p>تحتاج إدخال بيانات الموظفين وجداول الدوام، ثم يبدأ الموظفون بالبصمة. نساعدك في الإعداد الأول.</p></details>
+      <details><summary>هل يمكن أن يعتمد المدير الرئيسي التعديلات الحساسة؟</summary><p>نعم. يمكنك إعطاء مدير آخر صلاحيات محدودة، فتنتظر تعديلاته الحساسة اعتمادك قبل أن تُطبَّق.</p></details>
+      <details><summary>كيف أطلب عرضاً توضيحياً؟</summary><p>املأ النموذج في قسم التواصل بالأسفل، فنرتب معك جولة قصيرة على النظام.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="alt">
+  <div class="wrap">
+    <div class="demo">
+      <div>
+        <h2 style="font-size:clamp(26px,3.6vw,36px)">اطلب عرضاً توضيحياً</h2>
+        <p style="margin-top:10px;color:var(--muted)">جولة قصيرة نعرض فيها الحضور والرواتب على بيانات تشبه منشأتك، ونجيب عن أسئلتك.</p>
+        <div class="fit" style="margin-top:22px">
+          <span class="chip">واجهة عربية كاملة</span>
+          <span class="chip">نسب التأمينات الاجتماعية الجديدة</span>
+          <span class="chip">رواتب نقدية وتحويل</span>
+          <span class="chip">يعمل من الجوال</span>
+        </div>
+      </div>
+      <form class="fields" id="demoForm" autocomplete="off">
+        <label for="dn">الاسم<input id="dn" type="text"></label>
+        <label for="dc">اسم المنشأة<input id="dc" type="text"></label>
+        <label for="dp">رقم الجوال<input id="dp" type="tel" inputmode="tel"></label>
+        <label for="de">عدد الموظفين<input id="de" type="number" min="1" inputmode="numeric"></label>
+        <a class="btn" id="waBtn" href="#contact" target="_blank" rel="noopener">أرسل الطلب عبر واتساب</a>
+        <div class="hint" id="hint" role="status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap"><span>© 2026 حضورك</span><span>نظام موارد بشرية بالعربية للمنشآت في السعودية</span></div>
+</footer>
+</div>
+
+<script>
+/* أضيفي رقم الواتساب بصيغة دولية بدون + ولا أصفار، مثال: 9665XXXXXXXX */
+const WA = '';
+const plans = [[15, 'أساسية', 149], [50, 'نمو', 399], [150, 'أعمال', 899]];
+const $ = id => document.getElementById(id);
+const fmt = n => Math.round(n).toLocaleString('en-US');
+function calc() {
+  const e = +$('emp').value || 0, h = +$('hrs').value || 0, p = Math.min(100, Math.max(0, +$('pct').value || 0)), r = +$('rate').value || 0;
+  const hs = h * p / 100, save = hs * r;
+  $('saveMonth').textContent = fmt(save) + ' ريال';
+  $('saveHrs').textContent = fmt(hs) + ' ساعة';
+  const pl = plans.find(x => e <= x[0]);
+  if (pl) { $('planName').textContent = pl[1]; $('planPrice').textContent = fmt(pl[2]) + ' ريال'; const n = save - pl[2]; $('net').textContent = (n < 0 ? '-' : '') + fmt(Math.abs(n)) + ' ريال'; }
+  else { $('planName').textContent = 'مخصصة'; $('planPrice').textContent = 'حسب الاتفاق'; $('net').textContent = '-'; }
+}
+['emp', 'hrs', 'pct', 'rate'].forEach(id => $(id).addEventListener('input', calc));
+calc();
+function waHref() {
+  const t = 'السلام عليكم، أريد عرضاً توضيحياً لنظام حضورك.\nالاسم: ' + $('dn').value + '\nالمنشأة: ' + $('dc').value + '\nالجوال: ' + $('dp').value + '\nعدد الموظفين: ' + $('de').value;
+  return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(t);
+}
+function refresh() { if (WA) $('waBtn').href = waHref(); }
+['dn', 'dc', 'dp', 'de'].forEach(id => $(id).addEventListener('input', refresh));
+refresh();
+$('waBtn').addEventListener('click', ev => {
+  if (!WA) { ev.preventDefault(); $('hint').textContent = 'قناة الاستلام لم تُفعَّل بعد.'; return; }
+  if (!$('dn').value.trim() || !$('dp').value.trim()) { ev.preventDefault(); $('hint').textContent = 'اكتب الاسم ورقم الجوال أولاً.'; return; }
+  $('hint').textContent = '';
+});
+$('demoForm').addEventListener('submit', ev => ev.preventDefault());
+</script>
+
+</body>
+</html>
